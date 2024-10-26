@@ -12,4 +12,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
 // Route::apiResource('/posts', PostController::class);
-Route::get('/posts', [PostController::class, 'index'])->middleware('role:admin');
+
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::get('/posts', [PostController::class, 'index'])->middleware('role:admin|author|viewer');
+    Route::post('/posts', [PostController::class, 'store'])->middleware('role:admin|author');
+    Route::put('/posts/{post}', [PostController::class, 'update'])->middleware('role:admin|author');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->middleware('role:admin');
+    Route::get('/posts/{post}', [PostController::class, 'show'])->middleware('role:admin|viewer');
+});
